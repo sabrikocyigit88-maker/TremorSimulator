@@ -38,7 +38,6 @@ struct Settings {
   uint32_t remainingMs;
 };
 
-// ============= WEB PAGE - ÖN TARAFTA TANIMLANDI =============
 const char PAGE[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
 <html lang="tr">
@@ -76,31 +75,12 @@ const char PAGE[] PROGMEM = R"rawliteral(
       backdrop-filter: blur(8px);
     }
 
-    .full {
-      grid-column: 1 / -1;
-    }
+    .full { grid-column: 1 / -1; }
 
-    .header {
-      text-align: center;
-      margin-bottom: 18px;
-    }
-
-    .icon {
-      font-size: 42px;
-      margin-bottom: 8px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 28px;
-      letter-spacing: 0.3px;
-    }
-
-    .subtitle {
-      color: #9fb7ce;
-      font-size: 14px;
-      margin-top: 6px;
-    }
+    .header { text-align: center; margin-bottom: 18px; }
+    .icon { font-size: 42px; margin-bottom: 8px; }
+    h1 { margin: 0; font-size: 28px; letter-spacing: 0.3px; }
+    .subtitle { color: #9fb7ce; font-size: 14px; margin-top: 6px; }
 
     .frequency {
       text-align: center;
@@ -232,10 +212,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
       box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
     }
 
-    .dot.off {
-      background: #94a3b8;
-      box-shadow: none;
-    }
+    .dot.off { background: #94a3b8; box-shadow: none; }
 
     .footer {
       text-align: center;
@@ -262,9 +239,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
     }
 
     @media (max-width: 760px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
+      .container { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -331,7 +306,6 @@ const char PAGE[] PROGMEM = R"rawliteral(
 
     const canvas = document.getElementById('graph');
     const ctx = canvas.getContext('2d');
-
     const angleData = [];
     const freqData = [];
 
@@ -367,22 +341,13 @@ const char PAGE[] PROGMEM = R"rawliteral(
       }
     }
 
-    function alertStart() {
-      vibrate([80, 40, 80]);
-    }
-
-    function alertStop() {
-      vibrate([120, 60, 120]);
-    }
-
-    function alertEmergency() {
-      vibrate([220, 80, 220, 80, 220]);
-    }
+    function alertStart() { vibrate([80, 40, 80]); }
+    function alertStop() { vibrate([120, 60, 120]); }
+    function alertEmergency() { vibrate([220, 80, 220, 80, 220]); }
 
     function drawChart() {
       const rect = canvas.getBoundingClientRect();
       const ratio = window.devicePixelRatio || 1;
-
       canvas.width = Math.floor(rect.width * ratio);
       canvas.height = Math.floor(rect.height * ratio);
 
@@ -391,14 +356,12 @@ const char PAGE[] PROGMEM = R"rawliteral(
 
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(ratio, ratio);
-
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
       ctx.fillRect(0, 0, w, h);
 
       ctx.strokeStyle = 'rgba(148,163,184,0.22)';
       ctx.lineWidth = 1;
-
       for (let i = 0; i <= 5; i++) {
         const y = (h / 5) * i;
         ctx.beginPath();
@@ -438,12 +401,10 @@ const char PAGE[] PROGMEM = R"rawliteral(
     function pushChart(angle, freq) {
       angleData.push(angle);
       freqData.push(freq);
-
       if (angleData.length > 60) {
         angleData.shift();
         freqData.shift();
       }
-
       drawChart();
     }
 
@@ -458,12 +419,10 @@ const char PAGE[] PROGMEM = R"rawliteral(
 
     async function toggleMotor() {
       btn.disabled = true;
-
       const nextState = !motorRunning;
       const value = Number(durationInput.value) || 60;
 
       const ok = await fetchOk('/run?state=' + (nextState ? '1' : '0') + '&duration=' + value);
-
       if (!ok) {
         setStatus('Bağlantı hatası', false);
         btn.disabled = false;
@@ -489,7 +448,6 @@ const char PAGE[] PROGMEM = R"rawliteral(
 
     async function toggleTimer() {
       timerBtn.disabled = true;
-
       const nextState = !timerRunning;
       const ok = await fetchOk('/timer?state=' + (nextState ? '1' : '0'));
 
@@ -503,7 +461,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
 
       if (timerRunning) {
         timerBtn.textContent = '⏸ Süre Durdur';
-        setStatus(motorRunning ? 'Süre çalışıyor' : 'Süre başlatıldı', motorRunning || true);
+        setStatus(motorRunning ? 'Süre çalışıyor' : 'Süre başlatıldı', true);
       } else {
         timerBtn.textContent = '⏱️ Süre Başlat';
         setStatus(motorRunning ? 'Sistem çalışıyor' : 'Süre durduruldu', motorRunning);
@@ -521,12 +479,10 @@ const char PAGE[] PROGMEM = R"rawliteral(
 
       motorRunning = false;
       timerRunning = false;
-
       btn.textContent = '▶ Başlat';
       btn.classList.add('off');
       timerBtn.textContent = '⏱️ Süre Başlat';
       setStatus('⚠️ ACİL DURDURMA', false);
-
       timerDisplay.textContent = '--:--';
       alertEmergency();
     }
@@ -575,10 +531,9 @@ const char PAGE[] PROGMEM = R"rawliteral(
           pushChart(Number(data.angle), Number(data.frequency));
         }
       } catch (error) {
-        // sessiz mod
       }
 
-      setTimeout(pollData, 300);
+      setTimeout(pollData, 1000);
     }
 
     window.addEventListener('resize', drawChart);
@@ -589,7 +544,6 @@ const char PAGE[] PROGMEM = R"rawliteral(
 </body>
 </html>
 )rawliteral";
-// ============= WEB PAGE SONU =============
 
 void blinkLed(int count, int delayMs) {
   for (int i = 0; i < count; i++) {
@@ -739,6 +693,7 @@ void handleTimer() {
       if (!timerRunning) {
         timerRunning = true;
         timerStartedAtMs = millis();
+        timerRemainingMs = (uint32_t)durationSec * 1000UL;
         Serial.println("Timer baslatildi");
       }
     } else if (state == "0") {
@@ -772,12 +727,22 @@ void handleEmergency() {
 }
 
 void handleData() {
+  uint32_t remainingForClient = timerRemainingMs;
+  if (timerRunning) {
+    uint32_t elapsed = millis() - timerStartedAtMs;
+    if (elapsed >= remainingForClient) {
+      remainingForClient = 0;
+    } else {
+      remainingForClient -= elapsed;
+    }
+  }
+
   String json = "{";
   json += "\"angle\":" + String(atA ? ANGLE_A : ANGLE_B) + ",";
   json += "\"frequency\":" + String(freqHz, 1) + ",";
   json += "\"running\":" + String(running ? "true" : "false") + ",";
   json += "\"timerRunning\":" + String(timerRunning ? "true" : "false") + ",";
-  json += "\"remainingMs\":" + String(timerRemainingMs) + ",";
+  json += "\"remainingMs\":" + String(remainingForClient) + ",";
   json += "\"durationSec\":" + String(durationSec);
   json += "}";
   server.send(200, "application/json", json);
