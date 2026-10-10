@@ -13,12 +13,17 @@ const int SERVO_PIN = 38;
 const int ANGLE_A = 75;
 const int ANGLE_B = 105;
 
+const int SEVERITY_LOW = 0;
+const int SEVERITY_MID = 1;
+const int SEVERITY_HIGH = 2;
+
 Servo servo;
 WebServer server(80);
 
 float freqHz = 5.0;
 bool atA = true;
 bool running = false;
+int currentSeverity = SEVERITY_MID;
 
 bool timerRunning = false;
 uint32_t timerRemainingMs = 60000;
@@ -35,8 +40,33 @@ struct Settings {
   uint16_t durationSec;
   uint8_t running;
   uint8_t timerRunning;
+  uint8_t severity;
   uint32_t remainingMs;
 };
+
+int getSeverityMinAngle() {
+  switch (currentSeverity) {
+    case SEVERITY_LOW: return 68;
+    case SEVERITY_HIGH: return 60;
+    default: return 75;
+  }
+}
+
+int getSeverityMaxAngle() {
+  switch (currentSeverity) {
+    case SEVERITY_LOW: return 92;
+    case SEVERITY_HIGH: return 120;
+    default: return 105;
+  }
+}
+
+int getCurrentServoAngle() {
+  return atA ? getSeverityMinAngle() : getSeverityMaxAngle();
+}
+
+void writeCurrentMotorPosition() {
+  servo.write(getCurrentServoAngle());
+}
 
 const char PAGE[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
@@ -119,7 +149,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
       color: #b7c9d8;
     }
 
-    input[type="number"] {
+    input[type="number"], select {
       width: 100%;
       padding: 12px 14px;
       background: rgba(30, 41, 59, 0.82);
@@ -130,7 +160,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
       outline: none;
     }
 
-    input[type="number"]:focus {
+    input[type="number"]:focus, select:focus {
       border-color: #38bdf8;
       box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
     }
@@ -144,13 +174,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
       text-align: center;
     }
 
-    .timer {
-      font-size: 34px;
-      font-weight: bold;
-      color: #38bdf8;
-      letter-spacing: 1px;
-    }
-
+    .timer { font-size: 34px; font-weight: bold; color: #38bdf8; letter-spacing: 1px; }
     .timer.warning { color: #f59e0b; }
     .timer.critical { color: #ef4444; }
 
@@ -261,6 +285,13 @@ const char PAGE[] PROGMEM = R"rawliteral(
         <span>8.0 Hz</span>
       </div>
 
+      <div class="label">Şiddet seviyesi</div>
+      <select id="severity">
+        <option value="0">Hafif</option>
+        <option value="1" selected>Orta</option>
+        <option value="2">Şiddetli</option>
+      </select>
+
       <div class="label">Süre (saniye)</div>
       <input id="duration" type="number" min="10" max="3600" value="60" />
 
@@ -299,15 +330,35 @@ const char PAGE[] PROGMEM = R"rawliteral(
     const dot = document.getElementById('dot');
     const durationInput = document.getElementById('duration');
     const timerDisplay = document.getElementById('timer');
+    const severitySelect = document.getElementById('severity');
 
     let motorRunning = false;
     let timerRunning = false;
     let timerRemainingMs = 60000;
+    let currentSeverity = 1;
 
     const canvas = document.getElementById('graph');
     const ctx = canvas.getContext('2d');
     const angleData = [];
     const freqData = [];
+
+    function getSeverityConfig(level) {
+      switch (Number(level)) {
+        case 0:
+          return { label: 'Hafif', multiplier: 0.75, line: '#34d399', glow: 'rgba(52, 211, 153, 0.25)' };
+        case 2:
+          return { label: 'Şiddetli', multiplier: 1.35, line: '#f87171', glow: 'rgba(248, 113, 113, 0.25)' };
+        default:
+          return { label: 'Orta', multiplier: 1.0, line: '#38bdf8', glow: 'rgba(56, 189, 248, 0.25)' };
+      }
+    }
+
+    function applySeverity(level) {
+      currentSeverity = Number(level);
+      const cfg = getSeverityConfig(currentSeverity);
+      document.documentElement.style.setProperty('--graph-line', cfg.line);
+      fetch('/set?level=' + currentSeverity);
+    }
 
     function formatTime(ms) {
       const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
@@ -353,6 +404,8 @@ const char PAGE[] PROGMEM = R"rawliteral(
 
       const w = rect.width;
       const h = rect.height;
+      const cfg = getSeverityConfig(currentSeverity);
+      const maxVisual = 120 * cfg.multiplier;
 
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(ratio, ratio);
@@ -372,24 +425,24 @@ const char PAGE[] PROGMEM = R"rawliteral(
 
       if (angleData.length < 2) return;
 
-      const maxAngle = 120;
-      const maxFreq = 8;
-
       ctx.beginPath();
       angleData.forEach((v, i) => {
         const x = (i / (angleData.length - 1)) * w;
-        const y = h - ((v / maxAngle) * (h - 26)) - 10;
+        const y = h - ((v / maxVisual) * (h - 26)) - 10;
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
-      ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 2.2;
+      ctx.strokeStyle = cfg.line;
+      ctx.lineWidth = 2.6;
+      ctx.shadowColor = cfg.glow;
+      ctx.shadowBlur = 12;
       ctx.stroke();
+      ctx.shadowBlur = 0;
 
       ctx.beginPath();
       freqData.forEach((v, i) => {
         const x = (i / (freqData.length - 1)) * w;
-        const y = h - ((v / maxFreq) * (h - 26)) - 10;
+        const y = h - ((v / 8) * (h - 26)) - 10;
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
@@ -399,8 +452,11 @@ const char PAGE[] PROGMEM = R"rawliteral(
     }
 
     function pushChart(angle, freq) {
-      angleData.push(angle);
-      freqData.push(freq);
+      const cfg = getSeverityConfig(currentSeverity);
+      const adjusted = Number(angle) * cfg.multiplier;
+      angleData.push(adjusted);
+      freqData.push(Number(freq));
+
       if (angleData.length > 60) {
         angleData.shift();
         freqData.shift();
@@ -422,7 +478,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
       const nextState = !motorRunning;
       const value = Number(durationInput.value) || 60;
 
-      const ok = await fetchOk('/run?state=' + (nextState ? '1' : '0') + '&duration=' + value);
+      const ok = await fetchOk('/run?state=' + (nextState ? '1' : '0') + '&duration=' + value + '&level=' + currentSeverity);
       if (!ok) {
         setStatus('Bağlantı hatası', false);
         btn.disabled = false;
@@ -495,12 +551,16 @@ const char PAGE[] PROGMEM = R"rawliteral(
     s.addEventListener('change', async () => {
       const value = (s.value / 10).toFixed(1);
       const d = Number(durationInput.value) || 60;
-      await fetch('/set?f=' + value + '&d=' + d);
+      await fetch('/set?f=' + value + '&d=' + d + '&level=' + currentSeverity);
     });
 
     durationInput.addEventListener('change', async () => {
       const d = Number(durationInput.value) || 60;
-      await fetch('/set?f=' + (s.value / 10).toFixed(1) + '&d=' + d);
+      await fetch('/set?f=' + (s.value / 10).toFixed(1) + '&d=' + d + '&level=' + currentSeverity);
+    });
+
+    severitySelect.addEventListener('change', () => {
+      applySeverity(severitySelect.value);
     });
 
     async function pollData() {
@@ -527,6 +587,11 @@ const char PAGE[] PROGMEM = R"rawliteral(
           updateTimerUi();
         }
 
+        if (data.severity !== undefined) {
+          currentSeverity = Number(data.severity);
+          severitySelect.value = String(currentSeverity);
+        }
+
         if (data.angle !== undefined && data.frequency !== undefined) {
           pushChart(Number(data.angle), Number(data.frequency));
         }
@@ -537,6 +602,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
     }
 
     window.addEventListener('resize', drawChart);
+    severitySelect.value = String(currentSeverity);
     updateTimerUi();
     drawChart();
     pollData();
@@ -590,6 +656,7 @@ void saveSettings() {
   s.durationSec = durationSec;
   s.running = running ? 1 : 0;
   s.timerRunning = timerRunning ? 1 : 0;
+  s.severity = (uint8_t)currentSeverity;
   s.remainingMs = timerRemainingMs;
 
   EEPROM.put(0, s);
@@ -606,6 +673,7 @@ void loadSettings() {
     timerRemainingMs = 60000;
     running = false;
     timerRunning = false;
+    currentSeverity = SEVERITY_MID;
     return;
   }
 
@@ -613,6 +681,10 @@ void loadSettings() {
   durationSec = s.durationSec;
   running = s.running == 1;
   timerRunning = s.timerRunning == 1;
+  currentSeverity = (int)s.severity;
+  if (currentSeverity < SEVERITY_LOW || currentSeverity > SEVERITY_HIGH) {
+    currentSeverity = SEVERITY_MID;
+  }
   timerRemainingMs = s.remainingMs;
 
   if (timerRemainingMs == 0) {
@@ -651,6 +723,13 @@ void handleSet() {
     }
   }
 
+  if (server.hasArg("level")) {
+    int lvl = server.arg("level").toInt();
+    if (lvl >= SEVERITY_LOW && lvl <= SEVERITY_HIGH) {
+      currentSeverity = lvl;
+    }
+  }
+
   saveSettings();
   server.send(200, "text/plain", "ok");
 }
@@ -678,6 +757,13 @@ void handleRun() {
       if (!timerRunning) {
         timerRemainingMs = (uint32_t)durationSec * 1000UL;
       }
+    }
+  }
+
+  if (server.hasArg("level")) {
+    int lvl = server.arg("level").toInt();
+    if (lvl >= SEVERITY_LOW && lvl <= SEVERITY_HIGH) {
+      currentSeverity = lvl;
     }
   }
 
@@ -738,12 +824,13 @@ void handleData() {
   }
 
   String json = "{";
-  json += "\"angle\":" + String(atA ? ANGLE_A : ANGLE_B) + ",";
+  json += "\"angle\":" + String(getCurrentServoAngle()) + ",";
   json += "\"frequency\":" + String(freqHz, 1) + ",";
   json += "\"running\":" + String(running ? "true" : "false") + ",";
   json += "\"timerRunning\":" + String(timerRunning ? "true" : "false") + ",";
   json += "\"remainingMs\":" + String(remainingForClient) + ",";
-  json += "\"durationSec\":" + String(durationSec);
+  json += "\"durationSec\":" + String(durationSec) + ",";
+  json += "\"severity\":" + String(currentSeverity);
   json += "}";
   server.send(200, "application/json", json);
 }
@@ -759,7 +846,7 @@ void setup() {
 
   servo.setPeriodHertz(50);
   servo.attach(SERVO_PIN, 500, 2400);
-  servo.write(ANGLE_A);
+  writeCurrentMotorPosition();
 
   WiFi.mode(WIFI_AP);
   WiFi.softAP(AP_SSID, AP_PASS);
@@ -805,6 +892,6 @@ void loop() {
   if (now - lastToggle >= halfPeriod) {
     lastToggle = now;
     atA = !atA;
-    servo.write(atA ? ANGLE_A : ANGLE_B);
+    writeCurrentMotorPosition();
   }
 }
