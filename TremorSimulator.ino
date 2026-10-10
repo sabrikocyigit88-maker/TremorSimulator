@@ -80,8 +80,8 @@ const char PAGE[] PROGMEM = R"rawliteral(
     html, body {
       margin: 0;
       min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: radial-gradient(circle at top, #12263f 0%, #071521 45%, #020b14 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #1a2a4e 50%, #0d1f3c 100%);
       color: #e2e8f0;
       display: flex;
       align-items: center;
@@ -90,179 +90,276 @@ const char PAGE[] PROGMEM = R"rawliteral(
     }
 
     .container {
-      width: min(1100px, 100%);
+      width: min(1200px, 100%);
       display: grid;
-      grid-template-columns: 1.1fr 1.3fr;
-      gap: 18px;
+      grid-template-columns: 1.15fr 1.4fr;
+      gap: 22px;
     }
 
     .card {
-      background: rgba(15, 23, 42, 0.88);
-      border: 1px solid #294968;
-      border-radius: 26px;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.38);
-      padding: 22px;
-      backdrop-filter: blur(8px);
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(20, 35, 55, 0.88) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.18);
+      border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      padding: 28px;
+      backdrop-filter: blur(12px);
     }
 
     .full { grid-column: 1 / -1; }
 
-    .header { text-align: center; margin-bottom: 18px; }
-    .icon { font-size: 42px; margin-bottom: 8px; }
-    h1 { margin: 0; font-size: 28px; letter-spacing: 0.3px; }
-    .subtitle { color: #9fb7ce; font-size: 14px; margin-top: 6px; }
+    .header { text-align: center; margin-bottom: 22px; }
+    .icon { font-size: 48px; margin-bottom: 12px; animation: pulse 2s ease-in-out infinite; }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.05); }
+    }
+
+    h1 { margin: 0; font-size: 32px; letter-spacing: -0.5px; background: linear-gradient(135deg, #38bdf8 0%, #60a5fa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { color: #a9bcd4; font-size: 14px; margin-top: 8px; font-weight: 300; }
 
     .frequency {
       text-align: center;
-      font-size: 58px;
-      font-weight: bold;
-      color: #38bdf8;
-      margin-top: 12px;
-      margin-bottom: 4px;
+      font-size: 64px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      letter-spacing: -1px;
     }
 
     .unit {
       text-align: center;
       color: #cbd5e1;
-      margin-bottom: 18px;
-      font-size: 14px;
+      margin-bottom: 22px;
+      font-size: 13px;
+      font-weight: 500;
     }
 
     input[type="range"] {
       width: 100%;
       accent-color: #38bdf8;
       cursor: pointer;
+      height: 6px;
     }
 
     .range-labels {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
+      font-size: 11px;
       color: #a7bed4;
-      margin-top: 8px;
+      margin-top: 10px;
+      font-weight: 600;
     }
 
     .label {
-      margin-top: 18px;
-      margin-bottom: 8px;
+      margin-top: 20px;
+      margin-bottom: 10px;
       font-size: 12px;
       color: #b7c9d8;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
 
     input[type="number"], select {
       width: 100%;
-      padding: 12px 14px;
-      background: rgba(30, 41, 59, 0.82);
-      border: 1px solid #38577d;
-      border-radius: 12px;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(25, 35, 55, 0.9) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 14px;
       color: #f8fafc;
-      font-size: 16px;
+      font-size: 15px;
       outline: none;
+      transition: all 0.3s ease;
+      font-weight: 500;
     }
 
     input[type="number"]:focus, select:focus {
       border-color: #38bdf8;
-      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(96, 165, 250, 0.05) 100%);
     }
 
     .timer-box {
-      margin-top: 12px;
-      background: rgba(12, 28, 47, 0.8);
-      border: 1px solid #405c7d;
-      border-radius: 14px;
-      padding: 12px;
+      margin-top: 16px;
+      background: linear-gradient(135deg, rgba(12, 28, 47, 0.9) 0%, rgba(15, 35, 60, 0.85) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 18px;
+      padding: 16px;
       text-align: center;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
-    .timer { font-size: 34px; font-weight: bold; color: #38bdf8; letter-spacing: 1px; }
-    .timer.warning { color: #f59e0b; }
-    .timer.critical { color: #ef4444; }
+    .timer { font-size: 42px; font-weight: 700; color: #38bdf8; letter-spacing: -0.5px; }
+    .timer.warning { color: #fbbf24; }
+    .timer.critical { color: #ff6b6b; }
 
     .button-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 18px;
+      gap: 14px;
+      margin-top: 22px;
     }
 
     button {
       border: none;
-      border-radius: 14px;
+      border-radius: 16px;
       cursor: pointer;
       color: #fff;
-      font-size: 16px;
-      font-weight: bold;
-      padding: 16px 12px;
-      transition: transform 0.12s ease, opacity 0.15s ease;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+      font-size: 17px;
+      font-weight: 700;
+      padding: 18px 16px;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      position: relative;
+      overflow: hidden;
     }
 
-    button:active { transform: scale(0.98); }
-    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    button:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: left 0.3s ease;
+    }
+
+    button:hover:before { left: 100%; }
+    button:active { transform: scale(0.96); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
 
     #toggle {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       width: 100%;
+      font-size: 18px;
+      padding: 20px;
     }
 
     #toggle.off {
-      background: linear-gradient(135deg, #16a34a, #15803d);
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
     }
 
     #timerToggle {
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      font-size: 16px;
+      padding: 18px;
     }
 
     #emergency {
-      background: linear-gradient(135deg, #b91c1c, #991b1b);
+      background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
       grid-column: 1 / -1;
+      font-size: 18px;
+      padding: 20px;
     }
 
     .status {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      margin-top: 20px;
+      gap: 10px;
+      margin-top: 22px;
       color: #e2e8f0;
-      font-size: 14px;
+      font-size: 15px;
+      font-weight: 600;
     }
 
     .dot {
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background: #22c55e;
-      box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.9);
+      animation: blink 2s ease-in-out infinite;
     }
 
-    .dot.off { background: #94a3b8; box-shadow: none; }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .dot.off {
+      background: #64748b;
+      box-shadow: none;
+      animation: none;
+    }
 
     .footer {
       text-align: center;
       color: #86a0ba;
       font-size: 12px;
-      margin-top: 18px;
+      margin-top: 22px;
+      font-weight: 500;
     }
 
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+    }
+
+    .chart-header h2 {
+      margin: 0;
+      font-size: 20px;
+      background: linear-gradient(135deg, #38bdf8 0%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: #a9bfd5;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
     .chart-wrap {
-      width: 100%;
-      height: 360px;
-      background: rgba(12, 28, 47, 0.8);
-      border: 1px solid #294968;
+      flex: 1;
+      background: linear-gradient(135deg, rgba(12, 28, 47, 0.95) 0%, rgba(10, 25, 40, 0.92) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.15);
       border-radius: 18px;
-      padding: 10px;
+      padding: 14px;
+      box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.4);
     }
 
     canvas {
       width: 100% !important;
       height: 100% !important;
       display: block;
-      border-radius: 12px;
-      background: rgba(15, 23, 42, 0.6);
+      border-radius: 14px;
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 900px) {
       .container { grid-template-columns: 1fr; }
     }
   </style>
@@ -272,12 +369,12 @@ const char PAGE[] PROGMEM = R"rawliteral(
     <div class="card">
       <div class="header">
         <div class="icon">〰️</div>
-        <h1>Tremor Simülatörü</h1>
-        <div class="subtitle">Servo motor kontrol paneli</div>
+        <h1>Tremor Sim</h1>
+        <div class="subtitle">Servo Motor Kontrol Sistemi</div>
       </div>
 
       <div class="frequency" id="f">5.0</div>
-      <div class="unit">Hz · Saniyedeki hareket döngüsü</div>
+      <div class="unit">Hz</div>
 
       <input id="s" type="range" min="10" max="80" value="50" />
       <div class="range-labels">
@@ -285,15 +382,21 @@ const char PAGE[] PROGMEM = R"rawliteral(
         <span>8.0 Hz</span>
       </div>
 
-      <div class="label">Şiddet seviyesi</div>
-      <select id="severity">
-        <option value="0">Hafif</option>
-        <option value="1" selected>Orta</option>
-        <option value="2">Şiddetli</option>
-      </select>
-
-      <div class="label">Süre (saniye)</div>
-      <input id="duration" type="number" min="10" max="3600" value="60" />
+      <div class="label">Parametreler</div>
+      <div class="row">
+        <div>
+          <div class="label" style="margin-top: 0;">Şiddet</div>
+          <select id="severity">
+            <option value="0">🟢 Hafif</option>
+            <option value="1" selected>🟡 Orta</option>
+            <option value="2">🔴 Şiddetli</option>
+          </select>
+        </div>
+        <div>
+          <div class="label" style="margin-top: 0;">Süre (sn)</div>
+          <input id="duration" type="number" min="10" max="3600" value="60" />
+        </div>
+      </div>
 
       <div class="timer-box">
         <div class="timer" id="timer">--:--</div>
@@ -301,22 +404,36 @@ const char PAGE[] PROGMEM = R"rawliteral(
 
       <div class="status">
         <span id="dot" class="dot off"></span>
-        <span id="status">Sistem durduruldu</span>
+        <span id="status">Sistem Durduruldu</span>
       </div>
 
       <div class="button-grid">
         <button id="toggle" class="off" onclick="toggleMotor()">▶ Başlat</button>
-        <button id="timerToggle" onclick="toggleTimer()">⏱️ Süre Başlat</button>
+        <button id="timerToggle" onclick="toggleTimer()">⏱️ Süre</button>
         <button id="emergency" onclick="emergencyStop()">🛑 ACİL DURDUR</button>
       </div>
 
-      <div class="footer">ESP32 bağlantısı · TremorSim</div>
+      <div class="footer">ESP32 · TremorSim v1.0</div>
     </div>
 
     <div class="card full">
-      <h2 style="margin:0 0 12px 0; color:#38bdf8;">📊 Canlı Grafik</h2>
-      <div class="chart-wrap">
-        <canvas id="graph"></canvas>
+      <div class="chart-container">
+        <div class="chart-header">
+          <h2>📊 Canlı Hareket Analizi</h2>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #38bdf8;"></div>
+              <span>Açı</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #a78bfa;"></div>
+              <span>Frekans</span>
+            </div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="graph"></canvas>
+        </div>
       </div>
     </div>
   </div>
@@ -410,10 +527,10 @@ const char PAGE[] PROGMEM = R"rawliteral(
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(ratio, ratio);
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.5)';
       ctx.fillRect(0, 0, w, h);
 
-      ctx.strokeStyle = 'rgba(148,163,184,0.22)';
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.15)';
       ctx.lineWidth = 1;
       for (let i = 0; i <= 5; i++) {
         const y = (h / 5) * i;
@@ -433,9 +550,9 @@ const char PAGE[] PROGMEM = R"rawliteral(
         else ctx.lineTo(x, y);
       });
       ctx.strokeStyle = cfg.line;
-      ctx.lineWidth = 2.6;
+      ctx.lineWidth = 3;
       ctx.shadowColor = cfg.glow;
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = 16;
       ctx.stroke();
       ctx.shadowBlur = 0;
 
@@ -447,7 +564,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
         else ctx.lineTo(x, y);
       });
       ctx.strokeStyle = '#a78bfa';
-      ctx.lineWidth = 2.0;
+      ctx.lineWidth = 2.2;
       ctx.stroke();
     }
 
@@ -480,7 +597,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
 
       const ok = await fetchOk('/run?state=' + (nextState ? '1' : '0') + '&duration=' + value + '&level=' + currentSeverity);
       if (!ok) {
-        setStatus('Bağlantı hatası', false);
+        setStatus('Bağlantı Hatası', false);
         btn.disabled = false;
         return;
       }
@@ -490,12 +607,12 @@ const char PAGE[] PROGMEM = R"rawliteral(
       if (motorRunning) {
         btn.textContent = '⏸ Durdur';
         btn.classList.remove('off');
-        setStatus('Sistem çalışıyor', true);
+        setStatus('Sistem Çalışıyor', true);
         alertStart();
       } else {
         btn.textContent = '▶ Başlat';
         btn.classList.add('off');
-        setStatus('Sistem durduruldu', false);
+        setStatus('Sistem Durduruldu', false);
         alertStop();
       }
 
@@ -508,7 +625,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
       const ok = await fetchOk('/timer?state=' + (nextState ? '1' : '0'));
 
       if (!ok) {
-        setStatus('Zamanlayıcı hatası', false);
+        setStatus('Zamanlayıcı Hatası', false);
         timerBtn.disabled = false;
         return;
       }
@@ -516,11 +633,11 @@ const char PAGE[] PROGMEM = R"rawliteral(
       timerRunning = nextState;
 
       if (timerRunning) {
-        timerBtn.textContent = '⏸ Süre Durdur';
-        setStatus(motorRunning ? 'Süre çalışıyor' : 'Süre başlatıldı', true);
+        timerBtn.textContent = '⏸ Durdur';
+        setStatus(motorRunning ? 'Süre Çalışıyor' : 'Süre Başlatıldı', true);
       } else {
-        timerBtn.textContent = '⏱️ Süre Başlat';
-        setStatus(motorRunning ? 'Sistem çalışıyor' : 'Süre durduruldu', motorRunning);
+        timerBtn.textContent = '⏱️ Başlat';
+        setStatus(motorRunning ? 'Sistem Çalışıyor' : 'Süre Durduruldu', motorRunning);
       }
 
       timerBtn.disabled = false;
@@ -529,7 +646,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
     async function emergencyStop() {
       const ok = await fetchOk('/emergency');
       if (!ok) {
-        setStatus('Bağlantı hatası', false);
+        setStatus('Bağlantı Hatası', false);
         return;
       }
 
@@ -537,7 +654,7 @@ const char PAGE[] PROGMEM = R"rawliteral(
       timerRunning = false;
       btn.textContent = '▶ Başlat';
       btn.classList.add('off');
-      timerBtn.textContent = '⏱️ Süre Başlat';
+      timerBtn.textContent = '⏱️ Başlat';
       setStatus('⚠️ ACİL DURDURMA', false);
       timerDisplay.textContent = '--:--';
       alertEmergency();
@@ -574,12 +691,12 @@ const char PAGE[] PROGMEM = R"rawliteral(
           motorRunning = !!data.running;
           btn.textContent = motorRunning ? '⏸ Durdur' : '▶ Başlat';
           btn.classList.toggle('off', !motorRunning);
-          setStatus(motorRunning ? 'Sistem çalışıyor' : 'Sistem durduruldu', motorRunning);
+          setStatus(motorRunning ? 'Sistem Çalışıyor' : 'Sistem Durduruldu', motorRunning);
         }
 
         if (data.timerRunning !== undefined) {
           timerRunning = !!data.timerRunning;
-          timerBtn.textContent = timerRunning ? '⏸ Süre Durdur' : '⏱️ Süre Başlat';
+          timerBtn.textContent = timerRunning ? '⏸ Durdur' : '⏱️ Başlat';
         }
 
         if (data.remainingMs !== undefined) {
